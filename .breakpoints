@@ -1,0 +1,20 @@
+{
+  "files": {
+    "pages/index.tsx": [
+      {
+        "id": "bbf9de95-190e-45a1-bae1-e7799c0c51c8",
+        "line": 1,
+        "version": 5263,
+        "index": 0
+      }
+    ],
+    "styles/Home.module.css": [
+      {
+        "id": "247f84e4-2a83-44a9-b831-4614ce2a199c",
+        "line": 22,
+        "version": 3384,
+        "index": 517
+      }
+    ]
+  }
+}

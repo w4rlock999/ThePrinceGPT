@@ -1,0 +1,253 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;500;700;800&display=swap');
+@font-face {
+  font-family: "Lecherously";
+  src: url('fontType/Lecherously-Regular.ttf') format('truetype')
+}
+
+.theDiv {
+  display: inline-block;
+}
+
+.mainPage {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: #1F1F1F;
+  padding: 1px;
+  color: white;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.landingTextComponent {
+  position: relative;
+  margin-left: 0px;
+  padding-left: 0px;
+  left: 150px;
+  top: 100px;
+  width: 500px;
+  font-size: 19px;
+}
+
+.titleText {
+  font-family: "Lecherously";
+  font-size: 90px;
+  letter-spacing: 2px;
+  font-weight: 200;
+  margin-bottom: 0px;
+  padding-bottom: 0px
+}
+
+.subTitleText {
+  font-family: "Montserrat";
+  font-size: 24px;
+  font-weight: 700;
+  position: relative;
+  top: 0px;
+  margin-top: 0px;
+  padding-top: 0px;
+}
+
+.titleLine {
+  position: absolute;
+  width: 379px;
+  height: 0px;
+  left: 0px;
+  top: 135px;
+  
+  border: 2px solid #DD1C4B;
+}
+
+/* .landingText {
+  margin-top: 12%;
+  margin-left: calc(50% - 320px);
+  margin-right: 25%; 
+  position: relative;
+  z-index: 3; 
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+} */
+
+.sideBar {
+  position: fixed;
+  height:100vh;
+  width: 60px;
+  background: #DD1C4B;
+  left: -1px;
+  top: -1px;
+  overflow: hidden;
+  transition: 0.3s;
+  font-family: "Montserrat", sans-serif;
+  z-index: 5;
+}
+
+.sideBar:hover {
+  width: 200px;
+}
+
+.sideBarUl {
+  position: absolute;
+  padding: 0px;
+  margin: 0px;
+  list-style-type: none;
+  right: 60px;
+  width: 90px;
+  /* right: 60px;
+  width: 90px; */
+  top: 50px;
+}
+
+.sideBarLi {
+  margin-bottom: 30px;
+}
+
+.arrowIcon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+}
+
+.readButton {
+  position: fixed;
+  left: calc(50% - 70px);
+  bottom: 20px;
+  width: 200px;
+  height: 55px;
+  color: white;
+  font-family: "Montserrat", sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 29px;
+  background: #000000;
+  z-index: 25;
+}
+
+
+.textLogo {
+  position: fixed;
+  font-family: "Montserrat";
+  font-weight: 800;
+  font-size: 20px;
+  width: 75px;
+  margin-left: 40px;
+  bottom: 25px;
+  z-Index: 5;
+}
+.imgFrameDiv {
+  z-index: -2;
+}
+
+.theImage {
+  position: fixed;
+  margin-left: 400px;
+  height: 100vh;
+  /* width: 100%; */
+  max-width: 100%;
+}
+
+.imgFadeDiv {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0px;
+  top: 0px;
+  
+  background: linear-gradient(90deg, rgba(97, 15, 45, 0.96) 46.7%, rgba(64, 64, 64, 0) 108.52%);
+}
+
+.readingContainer {
+  display: flex;
+  height: 100vh;
+  z-index: 3;
+  margin-left: 60px;
+  padding:0;
+}
+
+.bookPane {
+  flex: 3;
+  z-index: 3;
+  background-color: blue;
+  /* padding: 20px 50px 20px 120px; */
+}
+
+.bookText {
+ padding: 60px; 
+}
+
+/* .chapterParagraph:active {
+  background: yellow;
+} */
+
+.chapterParagraph {
+  /* background: yellow; */
+}
+
+.chapterParagraphSelected {
+  background: yellow;
+  color: navy;
+}
+
+.chatPane {
+  flex: 2;
+  z-index: 3;
+  background-color: navy;
+}
+
+.chatBubble {
+  display: inline-block;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  /* background: navy; */
+  margin: 20px;
+  width: 500px;
+}
+
+.chatBotAvatar {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  background-color: gray;
+  border-radius: 2px;
+  margin-right: 10px;
+}
+
+.chatUserAvatar {
+  width: 40px;
+  height: 40px;
+  background-color: white;
+  border-radius: 2px;
+  margin-right: 10px;
+}
+
+.chatBotP {
+  background-color: lightblue;
+  padding: 10px;
+  border-radius: 2px;
+  margin-top: 0px;
+}
+
+.chatUserP {
+  background-color: purple;
+  padding: 10px;
+  border-radius: 2px;
+  margin-top: 0px;
+}
+
+.chatQuestionContainer {
+  margin-bottom: 10px;
+  margin: 20px;
+  padding-left: 50px;
+}
+
+.chatQuestionButton {
+  position: relative;
+  left: calc(50% - 150px);
+  width: 300px;
+  height: 30px;
+  background-color: lightblue;
+  font-family: 'Montserrat';
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
