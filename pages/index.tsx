@@ -21,12 +21,12 @@ function SideBar() {
       <div className={styles.sideBarNavContainer}>
         <ul className={styles.sideBarUl}>
           <li className={styles.sideBarLi}>
-            <a href='#'>
+            <a href='#/?chapter=1'>
               <span class="text"> Chapter I</span>
             </a>
           </li>
           <li className={styles.sideBarLi}>
-            <a href='#'>
+            <a href='#/?chapter=2'>
               <span class="text"> Chapter II</span>
             </a>
           </li>
@@ -138,14 +138,28 @@ function ReadMode() {
   const [generating, setGenerating] = useState(false)
 
   const { messages, input, handleInputChange, handleSubmit } = useChat
-
+  let currentChapter = 1 
+  
   useEffect(() => {
-    fetch('/api/fetchChapter')
+    const queryString = window.location.search; // "?name=John&age=25"
+    const urlParams = new URLSearchParams(queryString);
+    const chapterFromURL = urlParams.get('chapter');
+
+    if (chapterFromURL > 0) {
+      currentChapter = chapterFromURL
+    }    
+    
+    fetch('/api/fetchChapter',{
+        method: 'POST',
+        body: JSON.stringify({chapter : currentChapter}),
+        headers: {
+          'Content-Type': 'application/json',
+        }
+    })
       .then((response) => response.json())
       .then((data) => {
         setText(data.paragraphs);
       })
-
   }, []);
 
 
