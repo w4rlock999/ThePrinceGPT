@@ -86,6 +86,17 @@
   width: 200px;
 }
 
+.sideBarNavContainer {
+  background-color: orange;
+  height: 630px;
+  overflow: auto;
+  position: relative;
+}
+
+.sideBarNavContainer::-webkit-scrollbar {
+  background-color: #orange; /* Set the background color of the scrollbar track */
+}
+
 .sideBarUl {
   position: absolute;
   padding: 0px;

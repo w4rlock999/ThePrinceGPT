@@ -18,34 +18,76 @@ function TextLogo() {
 function SideBar() {
   return (
     <div className={styles.sideBar}>
-      <ul className={styles.sideBarUl}>
-        <li className={styles.sideBarLi}>
-          <a href='#'>
-            <span class="text"> Chapter I</span>
-          </a>
-        </li>
-        <li className={styles.sideBarLi}>
-          <a href='#'>
-            <span class="text"> Chapter II</span>
-          </a>
-        </li>
-        <li className={styles.sideBarLi}>
-          <a href='#'>
-            <span class="text"> Chapter III</span>
-          </a>
-        </li>
-        <li className={styles.sideBarLi}>
-          <a href='#'>
-            <span class="text"> Chapter IV</span>
-          </a>
-        </li>
-        <li className={styles.sideBarLi}>
-          <a href='#'>
-            <span class="text"> Chapter V</span>
-          </a>
-        </li>
+      <div className={styles.sideBarNavContainer}>
+        <ul className={styles.sideBarUl}>
+          <li className={styles.sideBarLi}>
+            <a href='#'>
+              <span class="text"> Chapter I</span>
+            </a>
+          </li>
+          <li className={styles.sideBarLi}>
+            <a href='#'>
+              <span class="text"> Chapter II</span>
+            </a>
+          </li>
+          <li className={styles.sideBarLi}>
+            <a href='#'>
+              <span class="text"> Chapter III</span>
+            </a>
+          </li>
+          <li className={styles.sideBarLi}>
+            <a href='#'>
+              <span class="text"> Chapter IV</span>
+            </a>
+          </li>
+          <li className={styles.sideBarLi}>
+            <a href='#'>
+              <span class="text"> Chapter V</span>
+            </a>
+          </li>
+          <li className={styles.sideBarLi}>
+            <a href='#'>
+              <span class="text"> Chapter V</span>
+            </a>
+          </li>
+          <li className={styles.sideBarLi}>
+            <a href='#'>
+              <span class="text"> Chapter V</span>
+            </a>
+          </li>
+          <li className={styles.sideBarLi}>
+            <a href='#'>
+              <span class="text"> Chapter V</span>
+            </a>
+          </li>
+          <li className={styles.sideBarLi}>
+            <a href='#'>
+              <span class="text"> Chapter V</span>
+            </a>
+          </li>
+          <li className={styles.sideBarLi}>
+            <a href='#'>
+              <span class="text"> Chapter V</span>
+            </a>
+          </li>
+          <li className={styles.sideBarLi}>
+            <a href='#'>
+              <span class="text"> Chapter V</span>
+            </a>
+          </li>
+          <li className={styles.sideBarLi}>
+            <a href='#'>
+              <span class="text"> Chapter V</span>
+            </a>
+          </li>
+          <li className={styles.sideBarLi}>
+            <a href='#'>
+              <span class="text"> Chapter V</span>
+            </a>
+          </li>
+        </ul>
 
-      </ul>
+      </div>
       <div className={styles.arrowIcon}>
         <span class="icon"><ion-icon name="caret-forward-outline"></ion-icon></span>
       </div>
@@ -94,7 +136,7 @@ function ReadMode() {
   const [resultText, setResultText] = useState('Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet')
   const [selectedParagraph, setSelectedParagraph] = useState('')
   const [generating, setGenerating] = useState(false)
-  
+
   const { messages, input, handleInputChange, handleSubmit } = useChat
 
   useEffect(() => {
@@ -128,34 +170,35 @@ function ReadMode() {
         }
       })
 
-      // if (response.ok) {
-      //   console.log("response OK boss")
-      // }
       if (response.ok) {
+        setResultText("")
         const reader = response.body.getReader()
 
         const processStream = async () => {
           while (true) {
-            const {done, value} = await reader.read()
-            
-            if(done) {
-              console.log("stream done!")
+            const { done, value } = await reader.read()
+
+            if (done) {
+              // console.log("stream done!")
               setGenerating(false)
               break
             }
 
             let chunk = new TextDecoder('utf-8').decode(value)
 
-            // chunk = chunk.replace(/^data: /,'')
-            console.log("this is chunk " + chunk)
-            const parsed = JSON.parse(chunk)
-            console.log(parsed)
-            setResultText((prev) => prev + parsed.response)
-          } 
+            chunk = chunk.replace(/^data: /, '')
+            // console.log("this is chunk " + chunk)
+            // const parsed = JSON.parse(chunk)
+            // const parsed = chunk
+            // console.log(parsed)
+
+            setResultText((prev) => prev + chunk)
+            // setResultText((prev) => prev + parsed)
+          }
         }
         processStream().catch(err => console.log('--stream error--', err))
       }
-      
+
       // const data = await response.json(); ////for fetch instead of stream
       // return data.answer; ////for fetch instead of stream
     } catch (error) {
@@ -170,7 +213,7 @@ function ReadMode() {
     setSelectedParagraph(clickedParagraphIndex)
 
     // fetch chatGPT response
-    const prompt = "explain this The Prince excerpt in under 10 words: "
+    const prompt = "explain this The Prince excerpt around 50 words: "
     prompt += text[clickedParagraphIndex]
     const responseString = await getGPTResponse(prompt)
     // setResultText(responseString) //for fetch instead of stream
