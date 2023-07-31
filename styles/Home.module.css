@@ -189,11 +189,14 @@
   flex: 3;
   z-index: 3;
   background-color: blue;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
   /* padding: 20px 50px 20px 120px; */
 }
 
 .bookText {
- padding: 60px; 
+  padding: 60px; 
 }
 
 /* .chapterParagraph:active {
@@ -215,23 +218,36 @@
   background-color: navy;
 }
 
-.chatBubble {
-  display: inline-block;
-  align-items: flex-start;
-  margin-bottom: 10px;
-  /* background: navy; */
-  margin: 20px;
-  width: 500px;
+.chatContainer {
+  position: relative;
+  background-color: red;
+  padding: 0px;
+  margin: 0px;
 }
 
 .chatBotAvatar {
   display: inline-block;
-  width: 40px;
-  height: 40px;
+  position: absolute;
+  top: 25px;
   background-color: gray;
-  border-radius: 2px;
-  margin-right: 10px;
+  width: 30px;
+  height: 30px;
+  left: 15px;  
+  border-radius: 4px;
+  padding-left: 7px;
+  padding-top: 3px;
 }
+
+.chatBubble {
+  background-color: lightblue;
+  display: inline-block;
+  position: absolute;
+  top: 25px;
+  left: 60px;
+  width: 80%;
+  border-radius: 4px;
+}
+
 
 .chatUserAvatar {
   width: 40px;
@@ -242,9 +258,7 @@
 }
 
 .chatBotP {
-  background-color: lightblue;
   padding: 10px;
-  border-radius: 2px;
   margin-top: 0px;
 }
 

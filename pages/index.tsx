@@ -4,6 +4,7 @@ import Head from 'next/head'
 import { useState, useEffect } from 'react'
 import styles from '../styles/Home.module.css'
 import { useChat } from "ai/react"
+import { useRouter } from "next/router"
 
 function TextLogo() {
   return (
@@ -16,75 +17,38 @@ function TextLogo() {
 }
 
 function SideBar() {
+
+  const router = useRouter();
+
+  const handleNavButtonClick = (index) => {
+    router.push(`/?chapter=${index + 1}`);
+  };
+
+  const chapters = [];
+
+  const romanNumerals = [
+    '', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
+    'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX',
+    'XXI', 'XXII', 'XXIII', 'XXIV', 'XXV', 'XXVI'
+  ];
+
+  for (let i = 1; i <= 26; i++) {
+    // chapters.push(`Chapter ${romanNumerals[i]}`);
+    chapters.push(`Chapter ${i}`);
+  }
+
   return (
     <div className={styles.sideBar}>
       <div className={styles.sideBarNavContainer}>
         <ul className={styles.sideBarUl}>
-          <li className={styles.sideBarLi}>
-            <a href='#/?chapter=1'>
-              <span class="text"> Chapter I</span>
-            </a>
-          </li>
-          <li className={styles.sideBarLi}>
-            <a href='#/?chapter=2'>
-              <span class="text"> Chapter II</span>
-            </a>
-          </li>
-          <li className={styles.sideBarLi}>
-            <a href='#'>
-              <span class="text"> Chapter III</span>
-            </a>
-          </li>
-          <li className={styles.sideBarLi}>
-            <a href='#'>
-              <span class="text"> Chapter IV</span>
-            </a>
-          </li>
-          <li className={styles.sideBarLi}>
-            <a href='#'>
-              <span class="text"> Chapter V</span>
-            </a>
-          </li>
-          <li className={styles.sideBarLi}>
-            <a href='#'>
-              <span class="text"> Chapter V</span>
-            </a>
-          </li>
-          <li className={styles.sideBarLi}>
-            <a href='#'>
-              <span class="text"> Chapter V</span>
-            </a>
-          </li>
-          <li className={styles.sideBarLi}>
-            <a href='#'>
-              <span class="text"> Chapter V</span>
-            </a>
-          </li>
-          <li className={styles.sideBarLi}>
-            <a href='#'>
-              <span class="text"> Chapter V</span>
-            </a>
-          </li>
-          <li className={styles.sideBarLi}>
-            <a href='#'>
-              <span class="text"> Chapter V</span>
-            </a>
-          </li>
-          <li className={styles.sideBarLi}>
-            <a href='#'>
-              <span class="text"> Chapter V</span>
-            </a>
-          </li>
-          <li className={styles.sideBarLi}>
-            <a href='#'>
-              <span class="text"> Chapter V</span>
-            </a>
-          </li>
-          <li className={styles.sideBarLi}>
-            <a href='#'>
-              <span class="text"> Chapter V</span>
-            </a>
-          </li>
+          {chapters.map((item, index) => (
+            <li className={styles.sideBarLi}
+              onClick={() => handleNavButtonClick(index)}
+              style={{ cursor: 'pointer' }}
+            >
+              {item}
+            </li>
+          ))}
         </ul>
 
       </div>
@@ -133,28 +97,32 @@ function LandingMode() {
 
 function ReadMode() {
   const [text, setText] = useState([])
-  const [resultText, setResultText] = useState('Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet')
+  const [resultText, setResultText] = useState('Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet')
   const [selectedParagraph, setSelectedParagraph] = useState('')
   const [generating, setGenerating] = useState(false)
+  const router = useRouter()
 
   const { messages, input, handleInputChange, handleSubmit } = useChat
-  let currentChapter = 1 
-  
+  let currentChapter = 1
+
   useEffect(() => {
     const queryString = window.location.search; // "?name=John&age=25"
     const urlParams = new URLSearchParams(queryString);
-    const chapterFromURL = urlParams.get('chapter');
+
+    const { chapter } = router.query
+    const chapterFromURL = chapter
+    // const chapterFromURL = urlParams.get('chapter');
 
     if (chapterFromURL > 0) {
       currentChapter = chapterFromURL
-    }    
-    
-    fetch('/api/fetchChapter',{
-        method: 'POST',
-        body: JSON.stringify({chapter : currentChapter}),
-        headers: {
-          'Content-Type': 'application/json',
-        }
+    }
+
+    fetch('/api/fetchChapter', {
+      method: 'POST',
+      body: JSON.stringify({ chapter: currentChapter }),
+      headers: {
+        'Content-Type': 'application/json',
+      }
     })
       .then((response) => response.json())
       .then((data) => {
@@ -162,6 +130,36 @@ function ReadMode() {
       })
   }, []);
 
+  useEffect(() => {
+    // Execute code whenever the router object changes
+    // For example, you can update your component state or perform any necessary actions
+    console.log('Router object changed:', router);
+    const { chapter } = router.query
+    const chapterFromURL = chapter
+    // const chapterFromURL = urlParams.get('chapter');
+
+    // if (chapterFromURL == currentChapter) {
+    //   return
+    // }
+
+    if (chapterFromURL > 0) {
+      currentChapter = chapterFromURL
+    }
+
+    setSelectedParagraph('')
+
+    fetch('/api/fetchChapter', {
+      method: 'POST',
+      body: JSON.stringify({ chapter: currentChapter }),
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setText(data.paragraphs);
+      })
+  }, [router]);
 
   const getParagraphClassName = (thisParagraphId) => {
 
@@ -251,10 +249,13 @@ function ReadMode() {
       </div>
       <div className={styles.chatPane}>
 
-        <div className={styles.chatBotAvatar}></div>
-        <div className={styles.chatBubble}>
-          {/* <p id="resultText" class="whitespace-pre-line"></p> */}
-          <p id="resultText" className={styles.chatBotP}>{resultText}</p>
+        <div className={styles.chatContainer}>
+          <div className={styles.chatBotAvatar}>AI</div>
+          <div className={styles.chatBubble}>
+            {/* <p id="resultText" class="whitespace-pre-line"></p> */}
+            <p id="resultText" className={styles.chatBotP}>{resultText}</p>
+          </div>
+
         </div>
 
         {/* <div className={styles.chatBubble}>
