@@ -142,6 +142,12 @@
   line-height: 29px;
   background: #000000;
   z-index: 25;
+  border: none;
+  cursor: pointer;
+}
+
+.readButton:hover {
+  background: gray;
 }
 
 
@@ -179,10 +185,12 @@
 
 .readingContainer {
   display: flex;
-  height: 100vh;
+  height: 99vh;
   z-index: 3;
+  margin:0px;
   margin-left: 60px;
   padding:0;
+  
 }
 
 .bookPane {
@@ -195,13 +203,21 @@
   /* padding: 20px 50px 20px 120px; */
 }
 
+.bookPane::-webkit-scrollbar {
+  width: 10px; /* Adjust width as desired */
+}
+
+.bookPane::-webkit-scrollbar-track {
+  background-color: #DD1C4B;
+}
+
+.bookPane::-webkit-scrollbar-thumb {
+  background-color: lightgray;
+}
+
 .bookText {
   padding: 60px; 
 }
-
-/* .chapterParagraph:active {
-  background: yellow;
-} */
 
 .chapterParagraph {
   /* background: yellow; */
@@ -216,57 +232,68 @@
   flex: 2;
   z-index: 3;
   background-color: navy;
+  overflow: auto;
+}
+
+.chatPane::-webkit-scrollbar {
+  width: 10px;
+}
+
+.chatPane::-webkit-scrollbar-track {
+  background-color: #DD1C4B; 
+}
+
+.chatPane::-webkit-scrollbar-thumb {
+  background-color: lightgray; 
 }
 
 .chatContainer {
-  position: relative;
-  background-color: red;
+  display: flex;
+  /* background-color: green; */
   padding: 0px;
+  padding-top: 25px;
   margin: 0px;
+  /* border: 2px solid white; */
 }
 
 .chatBotAvatar {
-  display: inline-block;
-  position: absolute;
-  top: 25px;
-  background-color: gray;
-  width: 30px;
+  flex: 0 0 30px;
   height: 30px;
-  left: 15px;  
+  background-color: gray;
   border-radius: 4px;
   padding-left: 7px;
   padding-top: 3px;
+  margin-left: 30px;
 }
-
-.chatBubble {
-  background-color: lightblue;
-  display: inline-block;
-  position: absolute;
-  top: 25px;
-  left: 60px;
-  width: 80%;
-  border-radius: 4px;
-}
-
 
 .chatUserAvatar {
-  width: 40px;
-  height: 40px;
-  background-color: white;
-  border-radius: 2px;
-  margin-right: 10px;
+  flex: 0 0 30px;
+  height: 30px;
+  background-color: whitesmoke;
+  border-radius: 4px;
+  padding-left: 7px;
+  padding-top: 3px;
+  margin-left: 30px;
 }
 
 .chatBotP {
+  flex: 9;
+  background-color: lightblue;
+  border-radius: 4px;
+  margin: 0px;
   padding: 10px;
-  margin-top: 0px;
+  margin-left: 25px;
+  margin-right: 40px;
 }
 
 .chatUserP {
-  background-color: purple;
+  flex: 9;
+  background-color: blue;
+  border-radius: 4px;
+  margin: 0px;
   padding: 10px;
-  border-radius: 2px;
-  margin-top: 0px;
+  margin-left: 25px;
+  margin-right: 40px;
 }
 
 .chatQuestionContainer {

@@ -3,12 +3,16 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useState, useEffect } from 'react'
 import styles from '../styles/Home.module.css'
-import { useChat } from "ai/react"
 import { useRouter } from "next/router"
 
-function TextLogo() {
+function TextLogo(props) {
+
+  const textLogoOnClickHandler = () => {
+    props.setReadMode(false)
+  }
+
   return (
-    <div className={styles.textLogo}>
+    <div style={{ cursor: 'pointer' }} className={styles.textLogo} onClick={textLogoOnClickHandler}>
       THE
       PRINCE
       GPT
@@ -16,24 +20,19 @@ function TextLogo() {
   )
 }
 
-function SideBar() {
+function SideBar(props) {
 
   const router = useRouter();
-
+  const chapters = [];
+  
   const handleNavButtonClick = (index) => {
-    router.push(`/?chapter=${index + 1}`);
+    router.push(`/?chapter=${index + 1}`)
+      .then(() => {
+        props.setReadMode(true)
+      });
   };
 
-  const chapters = [];
-
-  const romanNumerals = [
-    '', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
-    'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX',
-    'XXI', 'XXII', 'XXIII', 'XXIV', 'XXV', 'XXVI'
-  ];
-
   for (let i = 1; i <= 26; i++) {
-    // chapters.push(`Chapter ${romanNumerals[i]}`);
     chapters.push(`Chapter ${i}`);
   }
 
@@ -81,7 +80,11 @@ function LandingText() {
   )
 }
 
-function LandingMode() {
+function LandingMode(props) {
+
+  const startReadingOnClickHandler = () => {
+    props.setReadMode(true)
+  }
 
   return (
     <div>
@@ -91,6 +94,9 @@ function LandingMode() {
       <div className={styles.imgFadeDiv}>
       </div>
       <LandingText />
+      <button className={styles.readButton} onClick={startReadingOnClickHandler}>
+        Start reading
+      </button>
     </div>
   )
 }
@@ -101,46 +107,13 @@ function ReadMode() {
   const [selectedParagraph, setSelectedParagraph] = useState('')
   const [generating, setGenerating] = useState(false)
   const router = useRouter()
-
-  const { messages, input, handleInputChange, handleSubmit } = useChat
   let currentChapter = 1
-
-  useEffect(() => {
-    const queryString = window.location.search; // "?name=John&age=25"
-    const urlParams = new URLSearchParams(queryString);
-
-    const { chapter } = router.query
-    const chapterFromURL = chapter
-    // const chapterFromURL = urlParams.get('chapter');
-
-    if (chapterFromURL > 0) {
-      currentChapter = chapterFromURL
-    }
-
-    fetch('/api/fetchChapter', {
-      method: 'POST',
-      body: JSON.stringify({ chapter: currentChapter }),
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setText(data.paragraphs);
-      })
-  }, []);
 
   useEffect(() => {
     // Execute code whenever the router object changes
     // For example, you can update your component state or perform any necessary actions
-    console.log('Router object changed:', router);
     const { chapter } = router.query
     const chapterFromURL = chapter
-    // const chapterFromURL = urlParams.get('chapter');
-
-    // if (chapterFromURL == currentChapter) {
-    //   return
-    // }
 
     if (chapterFromURL > 0) {
       currentChapter = chapterFromURL
@@ -251,12 +224,20 @@ function ReadMode() {
 
         <div className={styles.chatContainer}>
           <div className={styles.chatBotAvatar}>AI</div>
+          <p id="resultText" className={styles.chatBotP}>{resultText}</p>
+        </div>
+        <div className={styles.chatContainer}>
+          <div className={styles.chatUserAvatar}>o</div>
+          <p id="resultText" className={styles.chatUserP}>{resultText}</p>
+        </div>
+
+        {/* <div className={styles.chatContainer}>
+          <div className={styles.chatBotAvatar}>AI</div>
           <div className={styles.chatBubble}>
-            {/* <p id="resultText" class="whitespace-pre-line"></p> */}
+
             <p id="resultText" className={styles.chatBotP}>{resultText}</p>
           </div>
-
-        </div>
+        </div> */}
 
         {/* <div className={styles.chatBubble}>
           <div className={styles.chatUserAvatar}></div>
@@ -281,23 +262,15 @@ function ReadMode() {
 function Layout() {
   const [readMode, setReadMode] = useState(false)
 
-  const toggleReadMode = () => {
-    setReadMode(!readMode)
-  }
-
   return (
     <div>
       <div className={styles.mainPage}>
-        <SideBar />
-        <div className={styles.imgFadeDiv}>
-        </div>
-        <TextLogo />
-        <button className={styles.readButton} onClick={toggleReadMode}>
-          Start reading
-        </button>
-
-        {readMode && <LandingMode />}
-        {!readMode && <ReadMode />}
+        <SideBar setReadMode={setReadMode} />
+        <TextLogo setReadMode={setReadMode} />
+        {!readMode &&
+          <LandingMode setReadMode={setReadMode} />
+        }
+        {readMode && <ReadMode />}
 
       </div>
       <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
@@ -311,7 +284,7 @@ const Home: NextPage = () => {
   return (
     <div>
       <Head>
-        <title>Create Next App</title>
+        <title>The Prince GPT</title>
         <meta name="description" content="Generated by create next app" />
         <link rel="icon" href="/favicon.ico" />
       </Head>

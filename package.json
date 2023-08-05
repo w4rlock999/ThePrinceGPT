@@ -9,9 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@emotion/react": "^11.10.6",
-    "@emotion/styled": "^11.10.6",
-    "ai": "^2.1.17",
     "cheerio": "^1.0.0-rc.12",
     "next": "12.2.0",
     "openai": "^3.3.0",
