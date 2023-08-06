@@ -217,6 +217,47 @@
   background-color: lightgray;
 }
 
+.bookPaneFadeDiv {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0px;
+  top: 0px;
+  pointer-events: none;
+  background: linear-gradient(0deg, #1F1F1F 13%, rgba(31, 31, 31, 0.00) 27%);
+}
+
+.nextPrevButtonContainer {
+  display: flex;
+  position: fixed;
+  width: 120px;
+  height: 50px;
+  background: transparent;
+  z-index: 5;
+  top: calc(0.89 * 100vh);
+  left: calc(25% + 35px);
+}
+
+.nextButton {
+  flex: 1;
+  background-color: transparent;
+  border: none;
+  color: white;
+  padding-top: 5px;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.prevButton {
+  flex: 1;
+  background-color: transparent;
+  border: none;
+  color: white;
+  padding-top: 5px;
+  font-size: 30px;
+  cursor: pointer;
+}
+
 .bookText {
   padding: 60px; 
 }

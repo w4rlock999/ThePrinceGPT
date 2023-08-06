@@ -1,7 +1,7 @@
 "use client"
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import styles from '../styles/Home.module.css'
 import { useRouter } from "next/router"
 
@@ -108,8 +108,9 @@ function ReadMode() {
   const [chatsState, setChatsState] = useState({ chatsArray: [initialChat] })
   const [selectedParagraph, setSelectedParagraph] = useState('')
   const [generating, setGenerating] = useState(false)
+  // const [currentChapter, setCurrentChapter] = useState(1)
+  const currentChapter = useRef(1)
   const router = useRouter()
-  let currentChapter = 1
 
   useEffect(() => {
     // Execute code whenever the router object changes
@@ -118,14 +119,14 @@ function ReadMode() {
     const chapterFromURL = chapter
 
     if (chapterFromURL > 0) {
-      currentChapter = chapterFromURL
+      currentChapter.current = chapterFromURL
     }
 
     setSelectedParagraph('')
 
     fetch('/api/fetchChapter', {
       method: 'POST',
-      body: JSON.stringify({ chapter: currentChapter }),
+      body: JSON.stringify({ chapter: currentChapter.current }),
       headers: {
         'Content-Type': 'application/json',
       }
@@ -134,6 +135,7 @@ function ReadMode() {
       .then((data) => {
         setText(data.paragraphs);
       })
+    // console.log("from useEffect, curChapter: " + currentChapter)
   }, [router]);
 
   const getParagraphClassName = (thisParagraphId) => {
@@ -160,7 +162,7 @@ function ReadMode() {
       if (response.ok) {
         // this is new implem using array state ======================
         //============================================================
-        
+
         const bufferArray = [...chatsState.chatsArray]
         bufferArray.push("")
         const reader = response.body.getReader()
@@ -176,11 +178,11 @@ function ReadMode() {
             chunk = chunk.replace(/^data: /, '')
             // setResultText((prev) => prev + chunk)
             bufferArray[bufferArray.length - 1] += chunk
-            setChatsState({...chatsState, chatsArray:bufferArray})
+            setChatsState({ ...chatsState, chatsArray: bufferArray })
           }
         }
         processStream().catch(err => console.log('--stream error--', err))
-        
+
         //============================================================
         // setResultText("")
         // const reader = response.body.getReader()
@@ -205,8 +207,6 @@ function ReadMode() {
   }
 
   const chapterParagraphOnClickHandler = async (clickedParagraphIndex) => {
-
-
     console.log("paragraph clicked!", clickedParagraphIndex)
     setSelectedParagraph(clickedParagraphIndex)
 
@@ -214,13 +214,39 @@ function ReadMode() {
     const prompt = "explain this The Prince excerpt around 50 words: "
     prompt += text[clickedParagraphIndex]
     const responseString = await getGPTResponse(prompt)
+
     // setResultText(responseString) //for fetch instead of stream
     // console.log("Response in the frontend " + responseString)
   }
 
+  const prevButtonOnClickHandler = () => {
+    if (currentChapter.current != 1) {
+      let newChapter : number = parseInt(currentChapter.current, 10)
+      newChapter -= 1
+      router.push(`/?chapter=${ newChapter }`)
+    }
+  }
+  const nextButtonOnClickHandler = () => {
+    if (currentChapter.current != 26) {
+      let newChapter : number = parseInt(currentChapter.current, 10)
+      newChapter += 1
+      router.push(`/?chapter=${ newChapter }`)
+    }
+  }
+
+
   return (
     <div className={styles.readingContainer} >
       <div className={styles.bookPane}>
+        <div className={styles.bookPaneFadeDiv}></div>
+        <div className={styles.nextPrevButtonContainer}>
+          <button className={styles.prevButton} onClick={prevButtonOnClickHandler}>
+            <ion-icon name="caret-back-outline"></ion-icon>
+          </button>
+          <button className={styles.nextButton} onClick={nextButtonOnClickHandler}>
+            <ion-icon name="caret-forward-outline"></ion-icon>
+          </button>
+        </div>
         <div className={styles.bookText}>
           {text.map((paragraph, index) => (
             <p
@@ -232,6 +258,12 @@ function ReadMode() {
             </p>
           ))}
         </div>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
       </div>
       <div className={styles.chatPane}>
 
@@ -240,9 +272,9 @@ function ReadMode() {
             <div className={styles.chatBotAvatar}>AI</div>
             <p id="chat" className={styles.chatBotP}>{chat}</p>
           </div>
-          )
+        )
         )}
-        
+
         {/* <div className={styles.chatContainer}>
           <div className={styles.chatBotAvatar}>AI</div>
           <p id="resultText" className={styles.chatBotP}>{resultText}</p>
