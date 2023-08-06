@@ -24,7 +24,7 @@ function SideBar(props) {
 
   const router = useRouter();
   const chapters = [];
-  
+
   const handleNavButtonClick = (index) => {
     router.push(`/?chapter=${index + 1}`)
       .then(() => {
@@ -65,7 +65,7 @@ function LandingText() {
         The Prince
       </h1>
       <h2 className={styles.subTitleText}>
-        1532, Machiavelli
+        1532, Niccolò Machiavelli
       </h2>
       <div className={styles.titleLine}>
       </div>
@@ -74,7 +74,7 @@ function LandingText() {
         The Prince <b>(Italian: Il Principe)</b> a 16th-century political treatise written by Italian diplomat and political theorist Niccolò Machiavelli as an instruction guide for new princes and royals.
       </p>
       <p>
-        <b>ThePrinceGPT</b> aims to make this masterpiece <b>digestable</b> to everyone with the power of ChatGPT’s Large Language Model
+        <b>ThePrinceGPT</b> aims to make this masterpiece <b>digestable</b> to everyone with the power of OpenAI’s Large Language Model
       </p>
     </div>
   )
@@ -103,7 +103,9 @@ function LandingMode(props) {
 
 function ReadMode() {
   const [text, setText] = useState([])
-  const [resultText, setResultText] = useState('Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit ametLorem ipsum dolor sit ametLorem ipsum dolor sit amet Lorem ipsum dolor sit amet')
+  const [resultText, setResultText] = useState("Welcome to The Prince GPT! Delve into Niccolò Machiavelli's brilliant insights paragraph by paragraph. Simply click on any paragraph, and our AI will provide you with a detailed explanation, helping you digest the book's profound teachings better. Grab your coffee, tune your music playlist and enjoy the journey through this timeless classic like never before! \n\n Happy reading!")
+  const initialChat = "Welcome to The Prince GPT! Delve into Niccolò Machiavelli's brilliant insights paragraph by paragraph. Simply click on any paragraph, and our AI will provide you with a detailed explanation, helping you digest the book's profound teachings better. Grab your coffee, tune your music playlist and enjoy the journey through this timeless classic like never before! \n\n Happy reading!"
+  const [chatsState, setChatsState] = useState({ chatsArray: [initialChat] })
   const [selectedParagraph, setSelectedParagraph] = useState('')
   const [generating, setGenerating] = useState(false)
   const router = useRouter()
@@ -156,36 +158,47 @@ function ReadMode() {
       })
 
       if (response.ok) {
-        setResultText("")
+        // this is new implem using array state ======================
+        //============================================================
+        
+        const bufferArray = [...chatsState.chatsArray]
+        bufferArray.push("")
         const reader = response.body.getReader()
 
         const processStream = async () => {
           while (true) {
             const { done, value } = await reader.read()
-
             if (done) {
-              // console.log("stream done!")
               setGenerating(false)
               break
             }
-
             let chunk = new TextDecoder('utf-8').decode(value)
-
             chunk = chunk.replace(/^data: /, '')
-            // console.log("this is chunk " + chunk)
-            // const parsed = JSON.parse(chunk)
-            // const parsed = chunk
-            // console.log(parsed)
-
-            setResultText((prev) => prev + chunk)
-            // setResultText((prev) => prev + parsed)
+            // setResultText((prev) => prev + chunk)
+            bufferArray[bufferArray.length - 1] += chunk
+            setChatsState({...chatsState, chatsArray:bufferArray})
           }
         }
         processStream().catch(err => console.log('--stream error--', err))
-      }
+        
+        //============================================================
+        // setResultText("")
+        // const reader = response.body.getReader()
 
-      // const data = await response.json(); ////for fetch instead of stream
-      // return data.answer; ////for fetch instead of stream
+        // const processStream = async () => {
+        //   while (true) {
+        //     const { done, value } = await reader.read()
+        //     if (done) {
+        //       setGenerating(false)
+        //       break
+        //     }
+        //     let chunk = new TextDecoder('utf-8').decode(value)
+        //     chunk = chunk.replace(/^data: /, '')
+        //     setResultText((prev) => prev + chunk)
+        //   }
+        // }
+        // processStream().catch(err => console.log('--stream error--', err))
+      }
     } catch (error) {
       console.error("Error:", error);
     }
@@ -222,15 +235,24 @@ function ReadMode() {
       </div>
       <div className={styles.chatPane}>
 
-        <div className={styles.chatContainer}>
+        {chatsState.chatsArray.map((chat, index) => (
+          <div className={styles.chatContainer}>
+            <div className={styles.chatBotAvatar}>AI</div>
+            <p id="chat" className={styles.chatBotP}>{chat}</p>
+          </div>
+          )
+        )}
+        
+        {/* <div className={styles.chatContainer}>
           <div className={styles.chatBotAvatar}>AI</div>
           <p id="resultText" className={styles.chatBotP}>{resultText}</p>
-        </div>
-        <div className={styles.chatContainer}>
+        </div> */}
+
+
+        {/* <div className={styles.chatContainer}>
           <div className={styles.chatUserAvatar}>o</div>
           <p id="resultText" className={styles.chatUserP}>{resultText}</p>
-        </div>
-
+        </div> */}
         {/* <div className={styles.chatContainer}>
           <div className={styles.chatBotAvatar}>AI</div>
           <div className={styles.chatBubble}>
