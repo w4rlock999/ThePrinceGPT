@@ -4,9 +4,9 @@ const { Configuration, OpenAIApi } = require("openai");
 export default async function handler(req, res) {
   const { prompt } = req.body;
   const mySecret = process.env.K_Master
-  
-  console.log(prompt)
-  
+
+  // console.log(prompt)
+
   const configuration = new Configuration({
     apiKey: mySecret,
   });
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
         }
         try {
           const parsed = JSON.parse(message);
-          console.log(parsed.choices[0].text);
+          // console.log(parsed.choices[0].text); //log stream output
         } catch (error) {
           console.error('Could not JSON parse stream message', message, error);
         }

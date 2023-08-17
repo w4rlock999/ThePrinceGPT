@@ -18,7 +18,7 @@ export default async function handler(req, res) {
   const { prompt } = req.body;
   const mySecret = process.env.K_Master
 
-  console.log(prompt)
+  // console.log(prompt)
 
   const configuration = new Configuration({
     apiKey: mySecret,
@@ -50,9 +50,9 @@ export default async function handler(req, res) {
           // const writeData = `data: ${JSON.stringify(data)}`
           const writeData = parsed.choices[0].text
           // console.log(data)
-          console.log(writeData)
+          // console.log(writeData) //log response stream
           res.write(writeData)
-          
+
         }
       })
     })

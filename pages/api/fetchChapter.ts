@@ -5,22 +5,27 @@ export default function handler(req, res) {
   const filePath = 'public/theprince.html'
   const html = fs.readFileSync(filePath, 'utf-8')
   const { chapter } = req.body
-  
-  const $ = cheerio.load(html)
-  const targetElement = $(`[id=chap${chapter > 9 ? '' : '0'}${chapter}]`)
-  const chapterDiv = targetElement.parentsUntil('div').parent()
-  const paragraphsElement = chapterDiv.find('p')
 
-  // console.log(paragraphs.text()) 
-  const paragraphsObject = {
+  // using cheerio to scrap theprince.html
+  const $ = cheerio.load(html)
+  const targetElement = $(`[id=chap${chapter > 9 ? '' : '0'}${chapter}]`) //get element with id=chapXX, with 0 if < 9 
+  const chapterDiv = targetElement.parentsUntil('div').parent()
+  const chapterTitleElement = chapterDiv.find('h2')
+  const chapterTitle = chapterTitleElement.contents().filter(
+                        function() {
+                          return $(this).prev().is('br')
+                        }).text().trim()
+  const paragraphsElements = chapterDiv.find('p')
+
+  const chapterObject = {
+    title: "",
     paragraphs: []
   }
-    
-  paragraphsElement.each((index, element) => {
+
+  chapterObject.title = chapterTitle
+  paragraphsElements.each((index, element) => {
     const paragraphText = $(element).text()
-    paragraphsObject.paragraphs.push(paragraphText)
+    chapterObject.paragraphs.push(paragraphText)
   })
-  // paragraphsObject.paragraphs.push("hello")
-  // console.log(paragraphsObject)
-  res.status(200).json(paragraphsObject)
+  res.status(200).json(chapterObject)
 }

@@ -102,14 +102,15 @@ function LandingMode(props) {
 }
 
 function ReadMode() {
-  const [text, setText] = useState([])
-  const [resultText, setResultText] = useState("Welcome to The Prince GPT! Delve into Niccolò Machiavelli's brilliant insights paragraph by paragraph. Simply click on any paragraph, and our AI will provide you with a detailed explanation, helping you digest the book's profound teachings better. Grab your coffee, tune your music playlist and enjoy the journey through this timeless classic like never before! \n\n Happy reading!")
-  const initialChat = "Welcome to The Prince GPT! Delve into Niccolò Machiavelli's brilliant insights paragraph by paragraph. Simply click on any paragraph, and our AI will provide you with a detailed explanation, helping you digest the book's profound teachings better. Grab your coffee, tune your music playlist and enjoy the journey through this timeless classic like never before! \n\n Happy reading!"
+  const [chapterTitle, setChapterTitle] = useState("")
+  const [paragraphsText, setParagraphsText] = useState([])
+  const initialChat = "Welcome to The Prince GPT! Delve into Niccolò Machiavelli's brilliant insights paragraph by paragraph. Simply click on any paragraph, and our AI will provide you with a detailed explanation, helping you digest the book's profound teachings better. Grab your coffee, tune your music playlist and enjoy the journey through this timeless classic like never before! \n\n Happy reading!Welcome to The Prince GPT! Delve into Niccolò Machiavelli's brilliant insights paragraph by paragraph. Simply click on any paragraph, and our AI will provide you with a detailed explanation, helping you digest the book's profound teachings better. Grab your coffee, tune your music playlist and enjoy the journey through this timeless classic like never before! \n\n Happy reading!Welcome to The Prince GPT! Delve into Niccolò Machiavelli's brilliant insights paragraph by paragraph. Simply click on any paragraph, and our AI will provide you with a detailed explanation, helping you digest the book's profound teachings better. Grab your coffee, tune your music playlist and enjoy the journey through this timeless classic like never before! \n\n Happy reading!Welcome to The Prince GPT! Delve into Niccolò Machiavelli's brilliant insights paragraph by paragraph. Simply click on any paragraph, and our AI will provide you with a detailed explanation, helping you digest the book's profound teachings better. Grab your coffee, tune your music playlist and enjoy the journey through this timeless classic like never before! \n\n Happy reading!Welcome to The Prince GPT! Delve into Niccolò Machiavelli's brilliant insights paragraph by paragraph. Simply click on any paragraph, and our AI will provide you with a detailed explanation, helping you digest the book's profound teachings better. Grab your coffee, tune your music playlist and enjoy the journey through this timeless classic like never before! \n\n Happy reading!Welcome to The Prince GPT! Delve into Niccolò Machiavelli's brilliant insights paragraph by paragraph. Simply click on any paragraph, and our AI will provide you with a detailed explanation, helping you digest the book's profound teachings better. Grab your coffee, tune your music playlist and enjoy the journey through this timeless classic like never before! \n\n Happy reading!"
   const [chatsState, setChatsState] = useState({ chatsArray: [initialChat] })
   const [selectedParagraph, setSelectedParagraph] = useState('')
   const [generating, setGenerating] = useState(false)
   // const [currentChapter, setCurrentChapter] = useState(1)
   const currentChapter = useRef(1)
+  const bookPaneRef = useRef(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -133,9 +134,12 @@ function ReadMode() {
     })
       .then((response) => response.json())
       .then((data) => {
-        setText(data.paragraphs);
+        setChapterTitle(data.title);
+        setParagraphsText(data.paragraphs);
       })
-    // console.log("from useEffect, curChapter: " + currentChapter)
+
+    bookPaneRef.current.scrollTop = 0
+
   }, [router]);
 
   const getParagraphClassName = (thisParagraphId) => {
@@ -212,7 +216,7 @@ function ReadMode() {
 
     // fetch chatGPT response
     const prompt = "explain this The Prince excerpt around 50 words: "
-    prompt += text[clickedParagraphIndex]
+    prompt += paragraphsText[clickedParagraphIndex]
     const responseString = await getGPTResponse(prompt)
 
     // setResultText(responseString) //for fetch instead of stream
@@ -221,24 +225,26 @@ function ReadMode() {
 
   const prevButtonOnClickHandler = () => {
     if (currentChapter.current != 1) {
-      let newChapter : number = parseInt(currentChapter.current, 10)
+      let newChapter: number = parseInt(currentChapter.current, 10)
       newChapter -= 1
-      router.push(`/?chapter=${ newChapter }`)
+      router.push(`/?chapter=${newChapter}`)
     }
   }
   const nextButtonOnClickHandler = () => {
     if (currentChapter.current != 26) {
-      let newChapter : number = parseInt(currentChapter.current, 10)
+      let newChapter: number = parseInt(currentChapter.current, 10)
       newChapter += 1
-      router.push(`/?chapter=${ newChapter }`)
+      router.push(`/?chapter=${newChapter}`)
     }
   }
 
 
   return (
     <div className={styles.readingContainer} >
-      <div className={styles.bookPane}>
-        <div className={styles.bookPaneFadeDiv}></div>
+      <div ref={bookPaneRef} className={styles.bookPane}>
+        <div className={styles.bookPaneFadeDivContainer}>
+          <div className={styles.bookPaneFadeDiv}></div>
+        </div>
         <div className={styles.nextPrevButtonContainer}>
           <button className={styles.prevButton} onClick={prevButtonOnClickHandler}>
             <ion-icon name="caret-back-outline"></ion-icon>
@@ -247,8 +253,17 @@ function ReadMode() {
             <ion-icon name="caret-forward-outline"></ion-icon>
           </button>
         </div>
-        <div className={styles.bookText}>
-          {text.map((paragraph, index) => (
+        <h2 className={styles.bookChapter}>
+          Chapter {currentChapter.current}
+          <div className={styles.bookChapterLine}>
+          </div>
+        </h2>
+
+        <h2 className={styles.bookChapterTitle}>
+          {chapterTitle}
+        </h2>
+        <div className={styles.bookChapterText}>
+          {paragraphsText.map((paragraph, index) => (
             <p
               key={index}
               className={getParagraphClassName(index)}
@@ -264,51 +279,78 @@ function ReadMode() {
         <br></br>
         <br></br>
         <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
       </div>
-      <div className={styles.chatPane}>
-
-        {chatsState.chatsArray.map((chat, index) => (
-          <div className={styles.chatContainer}>
-            <div className={styles.chatBotAvatar}>AI</div>
-            <p id="chat" className={styles.chatBotP}>{chat}</p>
+      {window.innerWidth <= 768 &&
+        <div className={styles.explanationOverlay}>
+          <p className={styles.explanationOverlayDescP}>
+            Paragraph Explanation
+          </p>
+          <div className={styles.explanationOverlayPLine}>
           </div>
-        )
-        )}
-
-        {/* <div className={styles.chatContainer}>
-          <div className={styles.chatBotAvatar}>AI</div>
-          <p id="resultText" className={styles.chatBotP}>{resultText}</p>
-        </div> */}
-
-
-        {/* <div className={styles.chatContainer}>
-          <div className={styles.chatUserAvatar}>o</div>
-          <p id="resultText" className={styles.chatUserP}>{resultText}</p>
-        </div> */}
-        {/* <div className={styles.chatContainer}>
-          <div className={styles.chatBotAvatar}>AI</div>
-          <div className={styles.chatBubble}>
-
-            <p id="resultText" className={styles.chatBotP}>{resultText}</p>
-          </div>
-        </div> */}
-
-        {/* <div className={styles.chatBubble}>
-          <div className={styles.chatUserAvatar}></div>
-          <p className={styles.chatUserP}>
-            Who is Machiavelli?
+          <p className={styles.explanationOverlayP}>
+            {/* {chatsState.chatsArray[chatsState.chatsArray.length - 1]} */}
+            {chatsState.chatsArray.length}
+            {/* hello hello */}
           </p>
         </div>
-        <div className={styles.chatQuestionContainer}>
-          <button className={styles.chatQuestionButton}>
-          </button>
-          <button className={styles.chatQuestionButton}>
-          </button>
-          <button className={styles.chatQuestionButton}>
-          </button>          
-        </div> */}
+      }
 
-      </div>
+      {window.innerWidth > 768 &&
+        <div className={styles.chatPane}>
+
+          {chatsState.chatsArray.map((chat, index) => (
+            <div className={styles.chatContainer}>
+              <div className={styles.chatBotAvatar}>AI</div>
+              <p id="chat" className={styles.chatBotP}>{chat}</p>
+            </div>
+          )
+          )}
+
+          {/* <div className={styles.chatContainer}>
+            <div className={styles.chatBotAvatar}>AI</div>
+            <p id="resultText" className={styles.chatBotP}>{resultText}</p>
+          </div> */}
+
+
+          {/* <div className={styles.chatContainer}>
+            <div className={styles.chatUserAvatar}>o</div>
+            <p id="resultText" className={styles.chatUserP}>{resultText}</p>
+          </div> */}
+          {/* <div className={styles.chatContainer}>
+            <div className={styles.chatBotAvatar}>AI</div>
+            <div className={styles.chatBubble}>
+  
+              <p id="resultText" className={styles.chatBotP}>{resultText}</p>
+            </div>
+          </div> */}
+
+          {/* <div className={styles.chatBubble}>
+            <div className={styles.chatUserAvatar}></div>
+            <p className={styles.chatUserP}>
+              Who is Machiavelli?
+            </p>
+          </div>
+          <div className={styles.chatQuestionContainer}>
+            <button className={styles.chatQuestionButton}>
+            </button>
+            <button className={styles.chatQuestionButton}>
+            </button>
+            <button className={styles.chatQuestionButton}>
+            </button>          
+          </div> */}
+          <br></br>
+          <br></br>
+          <br></br>
+          <br></br>
+
+        </div>
+      }
     </div>
   )
 }
@@ -340,6 +382,7 @@ const Home: NextPage = () => {
       <Head>
         <title>The Prince GPT</title>
         <meta name="description" content="Generated by create next app" />
+        <meta name="theme-color" content="#610F2D" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
