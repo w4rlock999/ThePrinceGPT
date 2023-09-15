@@ -435,10 +435,17 @@
     bottom: calc(18vh);
     z-index: 3;
   }
+
+  .explanationOverlayContainer {
+    max-height: 100%;
+    opacity: 1;
+    transition: max-height 3s ease-in-out, opacity 3s ease-in-out;
+  }
+  
   .explanationOverlay {
     position: fixed;
-    height: 60vh;
-    top: 40vh;
+    height: 100vh;
+    top: 10vh;
     width: 100%;
     padding: 0;
     margin: 0;
@@ -449,15 +456,32 @@
     border-radius: 28px 28px 0px 0px;
     background: #A8A8A8;
     font-family: "Montserrat";
-    
+    transition: max-height 3s ease-in-out, opacity 3s ease-in-out;
   }
+
+  .explanationOverlayTopScreen {
+
+    position: fixed;
+    height: 60vh;
+    top: 0;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    left: 0;
+    
+    z-index: 8;
+
+    background: rgba(0, 0, 0, 0.50);
+    transition: bottom 3s ease-in-out, opacity 3s ease-in-out;
+  }
+  
   .explanationOverlayDescP {
     margin-top: 40px;
     margin-left: 25px;
     width: 150px;
     font-weight: 700;
   }
-
+  
   .explanationOverlayPLine {
     position: absolute;
     right: 15px;
@@ -466,12 +490,24 @@
     
     background-color: #DD1C4B; /* Adjust the color to your preference */
   }
+  
+  .explanationOverlayPLineBottom {
+    position: fixed;
+    right: 15px;
+    left: 15px;
+    height: 2px;
+    bottom: 110px;
+    
+    background-color: #DD1C4B; /* Adjust the color to your preference */
+  }
 
   .explanationOverlayP {
     display: relative;
-    margin-top: 40px;
+    margin-top: 25px;
     margin-left: 25px;
+    margin-right: 25px;
     font-weight: 400;
+    height: 260px;
   }
 
   

@@ -104,18 +104,23 @@ function LandingMode(props) {
 function ReadMode() {
   const [chapterTitle, setChapterTitle] = useState("")
   const [paragraphsText, setParagraphsText] = useState([])
-  const initialChat = "Welcome to The Prince GPT! Delve into Niccolò Machiavelli's brilliant insights paragraph by paragraph. Simply click on any paragraph, and our AI will provide you with a detailed explanation, helping you digest the book's profound teachings better. Grab your coffee, tune your music playlist and enjoy the journey through this timeless classic like never before! \n\n Happy reading!Welcome to The Prince GPT! Delve into Niccolò Machiavelli's brilliant insights paragraph by paragraph. Simply click on any paragraph, and our AI will provide you with a detailed explanation, helping you digest the book's profound teachings better. Grab your coffee, tune your music playlist and enjoy the journey through this timeless classic like never before! \n\n Happy reading!Welcome to The Prince GPT! Delve into Niccolò Machiavelli's brilliant insights paragraph by paragraph. Simply click on any paragraph, and our AI will provide you with a detailed explanation, helping you digest the book's profound teachings better. Grab your coffee, tune your music playlist and enjoy the journey through this timeless classic like never before! \n\n Happy reading!Welcome to The Prince GPT! Delve into Niccolò Machiavelli's brilliant insights paragraph by paragraph. Simply click on any paragraph, and our AI will provide you with a detailed explanation, helping you digest the book's profound teachings better. Grab your coffee, tune your music playlist and enjoy the journey through this timeless classic like never before! \n\n Happy reading!Welcome to The Prince GPT! Delve into Niccolò Machiavelli's brilliant insights paragraph by paragraph. Simply click on any paragraph, and our AI will provide you with a detailed explanation, helping you digest the book's profound teachings better. Grab your coffee, tune your music playlist and enjoy the journey through this timeless classic like never before! \n\n Happy reading!Welcome to The Prince GPT! Delve into Niccolò Machiavelli's brilliant insights paragraph by paragraph. Simply click on any paragraph, and our AI will provide you with a detailed explanation, helping you digest the book's profound teachings better. Grab your coffee, tune your music playlist and enjoy the journey through this timeless classic like never before! \n\n Happy reading!"
+  const initialChat = "Welcome to The Prince GPT! Delve into Niccolò Machiavelli's brilliant insights paragraph by paragraph. Simply click on any paragraph, and our AI will provide you with a detailed explanation, helping you digest the book's profound teachings better. Grab your coffee, tune your music playlist and enjoy the journey through this timeless classic like never before! Happy reading!"
   const [chatsState, setChatsState] = useState({ chatsArray: [initialChat] })
+  const [followUpState, setFollowUpState] = useState({ followUpArray: [] })
   const [selectedParagraph, setSelectedParagraph] = useState('')
   const [generating, setGenerating] = useState(false)
+  const [displayExplanation, setDisplayExplanation] = useState(true)
   // const [currentChapter, setCurrentChapter] = useState(1)
   const currentChapter = useRef(1)
   const bookPaneRef = useRef(null)
   const router = useRouter()
+  const promptResponseList = useRef([])
+  const promptRequestList = useRef([])
 
   useEffect(() => {
     // Execute code whenever the router object changes
     // For example, you can update your component state or perform any necessary actions
+
     const { chapter } = router.query
     const chapterFromURL = chapter
 
@@ -142,6 +147,19 @@ function ReadMode() {
 
   }, [router]);
 
+  useEffect(() => {
+    if (!generating && chatsState.chatsArray.length > 1) {
+      console.log("finished generating!")
+      const prompt = "give 3 follow up topics, straight to the points, without intro, without numbering, minimum 5 words and maximum 9 words each, end each topic with an underscore character, following this format: (follow up topic 1_follow up topic 2_follow up topic 3_) , for the following: "
+      prompt += chatsState.chatsArray[chatsState.chatsArray.length - 1]
+      getGPTFollowUp(prompt)
+    }
+  }, [generating])
+
+  useEffect(() => {
+    console.log(followUpState)
+  }, [followUpState])
+
   const getParagraphClassName = (thisParagraphId) => {
 
     if (selectedParagraph === thisParagraphId)
@@ -154,19 +172,45 @@ function ReadMode() {
 
     setGenerating(true)
     const promptToSend = { prompt: prompt }
+
+    //Append the prompt into promptRequestList
+    promptRequestList.current.push(prompt)
+    //Append the response into promptResponseList
+    if (chatsState.chatsArray.length > 1) {
+      promptResponseList.current.push(chatsState.chatsArray[chatsState.chatsArray.length - 1])
+    }
+
+    // Initialize an empty array to store the Messages
+    var messages = [];
+
+    // Iterate through the arrays and append questions and answers to Messages
+    for (var i = 0; i < promptResponseList.current.length; i++) {
+      var userMessage = { "role": "user", "content": promptRequestList.current[i] };
+      var assistantMessage = { "role": "assistant", "content": promptResponseList.current[i] };
+
+      messages.push(userMessage);
+      messages.push(assistantMessage);
+    }
+
+    //Push the latest request
+    var userMessage = { "role": "user", "content": promptRequestList.current[promptRequestList.current.length - 1] };
+    messages.push(userMessage)
+
+    const messagesToSend = { messages: messages }
+    console.log(messagesToSend)
+
     try {
-      let response = await fetch('/api/streamChatGPT2', {
+      let response = await fetch('/api/streamChatGPT_SDKV4', {
         method: 'POST',
-        body: JSON.stringify(promptToSend),
+        body: JSON.stringify(messagesToSend),
         headers: {
           'Content-Type': 'application/json',
         }
       })
+      console.log("HTTP POST sent")
 
       if (response.ok) {
-        // this is new implem using array state ======================
-        //============================================================
-
+        console.log("response is OK")
         const bufferArray = [...chatsState.chatsArray]
         bufferArray.push("")
         const reader = response.body.getReader()
@@ -174,36 +218,70 @@ function ReadMode() {
         const processStream = async () => {
           while (true) {
             const { done, value } = await reader.read()
+
             if (done) {
               setGenerating(false)
+              console.log("break from streaming while loop")
               break
             }
+
             let chunk = new TextDecoder('utf-8').decode(value)
-            chunk = chunk.replace(/^data: /, '')
-            // setResultText((prev) => prev + chunk)
+
             bufferArray[bufferArray.length - 1] += chunk
             setChatsState({ ...chatsState, chatsArray: bufferArray })
           }
         }
-        processStream().catch(err => console.log('--stream error--', err))
+        //call processStream()s
+        await processStream()
+          .catch(err => console.log('--stream error--', err))
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
 
-        //============================================================
-        // setResultText("")
-        // const reader = response.body.getReader()
+  const getGPTFollowUp = async (prompt) => {
 
-        // const processStream = async () => {
-        //   while (true) {
-        //     const { done, value } = await reader.read()
-        //     if (done) {
-        //       setGenerating(false)
-        //       break
-        //     }
-        //     let chunk = new TextDecoder('utf-8').decode(value)
-        //     chunk = chunk.replace(/^data: /, '')
-        //     setResultText((prev) => prev + chunk)
-        //   }
-        // }
-        // processStream().catch(err => console.log('--stream error--', err))
+    var messages = []
+    var userMessage = { "role": "user", "content": prompt };
+    messages.push(userMessage)
+    const messagesToSend = { messages: messages }
+
+    try {
+      let response = await fetch('/api/streamChatGPT_SDKV4', {
+        method: 'POST',
+        body: JSON.stringify(messagesToSend),
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      console.log("HTTP POST sent")
+
+      if (response.ok) {
+        console.log("response is OK")
+
+        var buffer = ""
+        const reader = response.body.getReader()
+
+        const processStream = async () => {
+          while (true) {
+            const { done, value } = await reader.read()
+
+            if (done) {
+              break
+            }
+
+            let chunk = new TextDecoder('utf-8').decode(value)
+            buffer += chunk
+          }
+          console.log(buffer)
+          var bufferArray = buffer.split("_").filter((splittedString) => {
+            return splittedString != ""
+          })
+          setFollowUpState({ ...followUpState, followUpArray: bufferArray })
+        }
+        await processStream()
+          .catch(err => console.log('--stream error--', err))
       }
     } catch (error) {
       console.error("Error:", error);
@@ -213,14 +291,13 @@ function ReadMode() {
   const chapterParagraphOnClickHandler = async (clickedParagraphIndex) => {
     console.log("paragraph clicked!", clickedParagraphIndex)
     setSelectedParagraph(clickedParagraphIndex)
+    setDisplayExplanation(true)
 
     // fetch chatGPT response
-    const prompt = "explain this The Prince excerpt around 50 words: "
-    prompt += paragraphsText[clickedParagraphIndex]
-    const responseString = await getGPTResponse(prompt)
+    const prompt = "explain this paragraph around 50 words, straight to the explanation without intro or retelling my request, use an academic writing style, if there is any relevancies with other part of The Prince do mention it a bit in the closing, if the paragraph borrow ideas or describing a historical figure please explain a bit about him/her/them"
 
-    // setResultText(responseString) //for fetch instead of stream
-    // console.log("Response in the frontend " + responseString)
+    prompt += paragraphsText[clickedParagraphIndex]
+    await getGPTResponse(prompt)
   }
 
   const prevButtonOnClickHandler = () => {
@@ -238,6 +315,9 @@ function ReadMode() {
     }
   }
 
+  const screenOverlayOnClickHandler = () => {
+    setDisplayExplanation(false)
+  }
 
   return (
     <div className={styles.readingContainer} >
@@ -286,18 +366,22 @@ function ReadMode() {
         <br></br>
         <br></br>
       </div>
-      {window.innerWidth <= 768 &&
-        <div className={styles.explanationOverlay}>
-          <p className={styles.explanationOverlayDescP}>
-            Paragraph Explanation
-          </p>
-          <div className={styles.explanationOverlayPLine}>
+      {window.innerWidth <= 768 && displayExplanation &&
+        <div className={styles.explanationOverlayContainer}>
+          <div className={styles.explanationOverlayTopScreen} onClick={screenOverlayOnClickHandler}></div>
+          <div className={styles.explanationOverlay}>
+            <p className={styles.explanationOverlayDescP}>
+              Paragraph Explanation
+            </p>
+            <div className={styles.explanationOverlayPLine}>
+            </div>
+            <p className={styles.explanationOverlayP}>
+              {chatsState.chatsArray[chatsState.chatsArray.length - 1]}
+            </p>
+            <div className={styles.explanationOverlayPLineBottom}>
+            </div>
+
           </div>
-          <p className={styles.explanationOverlayP}>
-            {/* {chatsState.chatsArray[chatsState.chatsArray.length - 1]} */}
-            {chatsState.chatsArray.length}
-            {/* hello hello */}
-          </p>
         </div>
       }
 
@@ -312,38 +396,13 @@ function ReadMode() {
           )
           )}
 
-          {/* <div className={styles.chatContainer}>
-            <div className={styles.chatBotAvatar}>AI</div>
-            <p id="resultText" className={styles.chatBotP}>{resultText}</p>
-          </div> */}
-
-
-          {/* <div className={styles.chatContainer}>
-            <div className={styles.chatUserAvatar}>o</div>
-            <p id="resultText" className={styles.chatUserP}>{resultText}</p>
-          </div> */}
-          {/* <div className={styles.chatContainer}>
-            <div className={styles.chatBotAvatar}>AI</div>
-            <div className={styles.chatBubble}>
-  
-              <p id="resultText" className={styles.chatBotP}>{resultText}</p>
+          {followUpState.followUpArray.map((followUp, index) => (
+            <div className={styles.followUpContainer}>
+              <p> {followUp}
+              </p>
             </div>
-          </div> */}
-
-          {/* <div className={styles.chatBubble}>
-            <div className={styles.chatUserAvatar}></div>
-            <p className={styles.chatUserP}>
-              Who is Machiavelli?
-            </p>
-          </div>
-          <div className={styles.chatQuestionContainer}>
-            <button className={styles.chatQuestionButton}>
-            </button>
-            <button className={styles.chatQuestionButton}>
-            </button>
-            <button className={styles.chatQuestionButton}>
-            </button>          
-          </div> */}
+          )
+          )}
           <br></br>
           <br></br>
           <br></br>
