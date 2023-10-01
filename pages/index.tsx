@@ -150,8 +150,10 @@ function ReadMode() {
   useEffect(() => {
     if (!generating && chatsState.chatsArray.length > 1) {
       console.log("finished generating!")
-      const prompt = "give 3 follow up topics, straight to the points, without intro, without numbering, minimum 5 words and maximum 9 words each, end each topic with an underscore character, following this format: (follow up topic 1_follow up topic 2_follow up topic 3_) , for the following: "
+      const prompt = "I have the following paragraph: "
       prompt += chatsState.chatsArray[chatsState.chatsArray.length - 1]
+      prompt += "\n from it, give 3 follow up topics, no more and no less than 3 topics, straight to the points, without intro, without numbering, minimum 7 words and maximum 15 words each, each topic separated with mandatory semicolon as in this format examples: (Machiavelli's legacy;Alexander The Great politics;How Germany doomed on world war 2) (Examples of greed that destroy a company;Fraud and scam in the startup world;More on why leader should wary of being hated), \n\n topics should be about relevancies with historical event, or real historical business case, or real war history, or real historical politics, or section in The Prince, and if the paragraph mentions an example, please give a follow up topic to deep dive into it."
+
       getGPTFollowUp(prompt)
     }
   }, [generating])
@@ -243,7 +245,13 @@ function ReadMode() {
   const getGPTFollowUp = async (prompt) => {
 
     var messages = []
+    var initialMessage = {"role": "user", "content": "You are a book reader assistant, you will give 3 follow up topics of a paragraph, with this example formatting: ```Julius Caesar politics in ptolemic egypt;Alexander The Great fragile politics;How Adolf Hitler's war was a certain loss``` for starter, please give example of follow up topic of a paragraph in The Prince, with that format, each topic MUST ended with semicolon (;) and without white space"};
+    var initialResponse = {"role": "assistant", "content": "Challenges of Ruling Hereditary States;Strategies for Consolidating New States;Historical Instances of Power Regained"};
     var userMessage = { "role": "user", "content": prompt };
+
+
+    messages.push(initialMessage)
+    messages.push(initialResponse)
     messages.push(userMessage)
     const messagesToSend = { messages: messages }
 
@@ -275,7 +283,7 @@ function ReadMode() {
             buffer += chunk
           }
           console.log(buffer)
-          var bufferArray = buffer.split("_").filter((splittedString) => {
+          var bufferArray = buffer.split(";").filter((splittedString) => {
             return splittedString != ""
           })
           setFollowUpState({ ...followUpState, followUpArray: bufferArray })
@@ -289,12 +297,15 @@ function ReadMode() {
   }
 
   const chapterParagraphOnClickHandler = async (clickedParagraphIndex) => {
+    // clear the follow up question
+    setFollowUpState({ ...followUpState, followUpArray: [] })
+
     console.log("paragraph clicked!", clickedParagraphIndex)
     setSelectedParagraph(clickedParagraphIndex)
     setDisplayExplanation(true)
 
     // fetch chatGPT response
-    const prompt = "explain this paragraph around 50 words, straight to the explanation without intro or retelling my request, use an academic writing style, if there is any relevancies with other part of The Prince do mention it a bit in the closing, if the paragraph borrow ideas or describing a historical figure please explain a bit about him/her/them"
+    var prompt = "explain this paragraph around 50 words, straight to the explanation without intro or retelling my request, use an academic writing style, if there is any relevancies with other part of The Prince do mention it a bit in the closing, if the paragraph borrow ideas or describing a historical figure please explain a bit about him/her/them"
 
     prompt += paragraphsText[clickedParagraphIndex]
     await getGPTResponse(prompt)
@@ -317,6 +328,16 @@ function ReadMode() {
 
   const screenOverlayOnClickHandler = () => {
     setDisplayExplanation(false)
+  }
+
+  const followUpButtonOnClickHandler = async (followUp) => {
+    // clear the follow up question
+    setFollowUpState({ ...followUpState, followUpArray: [] })
+
+    var prompt = "still related with the previous questions, please explain more about: "
+    prompt += followUp
+    prompt += " in less than 50 words, academic style, factual, educational, slips in some fun fact / trivia sneakily"
+    await getGPTResponse(prompt)
   }
 
   return (
@@ -395,11 +416,11 @@ function ReadMode() {
             </div>
           )
           )}
-
           {followUpState.followUpArray.map((followUp, index) => (
             <div className={styles.followUpContainer}>
-              <p> {followUp}
-              </p>
+              <button className={styles.followUpButton} onClick={() => followUpButtonOnClickHandler(followUp)} >
+                {followUp}
+              </button>
             </div>
           )
           )}

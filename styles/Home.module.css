@@ -222,22 +222,22 @@
 
 .bookPaneFadeDivContainer {
   position: absolute;
-  display: inline-block;
+  display: block;
   width: 100%;
   height: 100%;
   left: 0px;
   top: 0px;
   pointer-events: none;
-  padding-right: 10px;
+  padding-right: 10px;  
 }
 
 .bookPaneFadeDiv{
   position: relative;
   top: 0;
   left: 0;
-  width: 100%;
+  width: calc(3/5*100%);
   height: 100%;
-  background: linear-gradient(0deg, #1F1F1F 13%, rgba(31, 31, 31, 0.00) 27%); 
+  background: linear-gradient(0deg, #1F1F1F 13%, rgba(31, 31, 31, 0.00) 27%);   
 }
 
 .nextPrevButtonContainer {
@@ -374,10 +374,32 @@
   margin-right: 40px;
 }
 
-.chatQuestionContainer {
-  margin-bottom: 10px;
-  margin: 20px;
-  padding-left: 50px;
+.followUpContainer {
+  display: flex;
+  padding: 0px;
+  padding-top: 15px;
+  margin: 0px;
+}
+
+.followUpButton {
+  flex: 9;
+  background-color: #C74675;
+  border-radius: 4px;
+  margin: 0px;
+  padding: 10px;
+  margin-left: 76px;
+  margin-right: 80px;
+  /* font-family: "Montserrat", sans-serif;
+  font-weight: 500; */
+  font-size: 16px;
+  text-align: left;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.followUpButton:hover {
+  background: #D087A2;
 }
 
 .chatQuestionButton {
@@ -421,10 +443,13 @@
     padding-left: 20px;
     padding-right: 20px;
     font-size: 15px;
-  }
+  }  
+  
   .bookPaneFadeDiv {
+    width: 100%;
     background: linear-gradient(0deg, #1F1F1F 20%, rgba(31, 31, 31, 0.00) 35%);
   }
+  
   .nextPrevButtonContainer {
     /* top: calc(0.82 * 100vh); */
     bottom: 57px;
