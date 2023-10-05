@@ -1,5 +1,8 @@
 # The Prince by Machiavelli - ChatGPT Integration Project [WIP]
 
+## Fork and run it on Replit
+https://replit.com/@w4rlock999/ThePrinceGPT-STABLE?v=1
+
 ## Overview
 
 The "The Prince" by Machiavelli - ChatGPT Integration Project aims to provide users with an interactive platform to explore and analyze the classic work "The Prince" written by Niccolò Machiavelli. By integrating the powerful language model ChatGPT, users can query specific paragraphs from "The Prince" and receive detailed explanations and deeper insights into the text.
