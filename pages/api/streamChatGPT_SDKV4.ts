@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   });
 
   const { messages } = req.body;
-  const mySecret = process.env.K_Master
+  const mySecret = process.env.API_KEY
   const openai = new OpenAI({
     apiKey: mySecret,
   });

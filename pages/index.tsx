@@ -4,7 +4,6 @@ import Head from 'next/head'
 import { useState, useEffect, useRef } from 'react'
 import styles from '../styles/Home.module.css'
 import { useRouter } from "next/router"
-import Database from '@replit/database'
 
 function TextLogo(props) {
 
@@ -86,22 +85,6 @@ function LandingMode(props) {
   const startReadingOnClickHandler = () => {
     props.setReadMode(true)
   }
-
-  // const client = new Database();
-  // client.set("key1", "this is from REPLIT DB");
-  // client.set("key2", "this is from REPLIT DB");
-  // client.set("key3", "this is from REPLIT DB").then(() => {    
-  //   client.list().then(keys => {console.log(keys)})
-  // });
-
-  // let key = client.get("key");
-  // client.list().then(keys => {
-  //   console.log(keys)
-  // })
-
-  // client.getAll().then((allPairs) => {
-  //   console.log(allPairs)
-  // })
 
   return (
     <div>
