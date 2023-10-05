@@ -4,6 +4,7 @@ import Head from 'next/head'
 import { useState, useEffect, useRef } from 'react'
 import styles from '../styles/Home.module.css'
 import { useRouter } from "next/router"
+import Database from '@replit/database'
 
 function TextLogo(props) {
 
@@ -86,6 +87,22 @@ function LandingMode(props) {
     props.setReadMode(true)
   }
 
+  // const client = new Database();
+  // client.set("key1", "this is from REPLIT DB");
+  // client.set("key2", "this is from REPLIT DB");
+  // client.set("key3", "this is from REPLIT DB").then(() => {    
+  //   client.list().then(keys => {console.log(keys)})
+  // });
+
+  // let key = client.get("key");
+  // client.list().then(keys => {
+  //   console.log(keys)
+  // })
+
+  // client.getAll().then((allPairs) => {
+  //   console.log(allPairs)
+  // })
+
   return (
     <div>
       <div className={styles.imgFrameDiv}>
@@ -158,9 +175,9 @@ function ReadMode() {
     }
   }, [generating])
 
-  useEffect(() => {
-    console.log(followUpState)
-  }, [followUpState])
+  // useEffect(() => {
+  //   // console.log(followUpState)
+  // }, [followUpState])
 
   const getParagraphClassName = (thisParagraphId) => {
 
@@ -245,8 +262,8 @@ function ReadMode() {
   const getGPTFollowUp = async (prompt) => {
 
     var messages = []
-    var initialMessage = {"role": "user", "content": "You are a book reader assistant, you will give 3 follow up topics of a paragraph, with this example formatting: ```Julius Caesar politics in ptolemic egypt;Alexander The Great fragile politics;How Adolf Hitler's war was a certain loss``` for starter, please give example of follow up topic of a paragraph in The Prince, with that format, each topic MUST ended with semicolon (;) and without white space"};
-    var initialResponse = {"role": "assistant", "content": "Challenges of Ruling Hereditary States;Strategies for Consolidating New States;Historical Instances of Power Regained"};
+    var initialMessage = { "role": "user", "content": "You are a book reader assistant, you will give 3 follow up topics of a paragraph, with this example formatting: ```Julius Caesar politics in ptolemic egypt;Alexander The Great fragile politics;How Adolf Hitler's war was a certain loss``` for starter, please give example of follow up topic of a paragraph in The Prince, with that format, each topic MUST ended with semicolon (;) and without white space" };
+    var initialResponse = { "role": "assistant", "content": "Challenges of Ruling Hereditary States;Strategies for Consolidating New States;Historical Instances of Power Regained" };
     var userMessage = { "role": "user", "content": prompt };
 
 
