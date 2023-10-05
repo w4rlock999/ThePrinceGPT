@@ -1,25 +1,6 @@
 import OpenAI from 'openai';
-import Database from '@replit/database';
 
 export default async function handler(req, res) {
-
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-
-  const database = new Database();
-
-  console.log("user IP address: " + ip);
-
-  var curUserStat = await database.get(ip)
-  console.log(curUserStat)
-  if (curUserStat == null) {
-    console.log("current user is null")
-    database.set(ip, { time: "now", totalReq: 1 })
-  } else {
-    console.log("current user is " + ip)
-    var curTotalReq = curUserStat.totalReq += 1
-    database.set(ip, { time: "now", totalReq: curTotalReq })
-    console.log("total request " + curUserStat.totalReq)
-  }
 
   res.writeHead(200, {
     Connection: 'keep-alive',
