@@ -1,6 +1,9 @@
-# The Prince by Machiavelli - ChatGPT Integration Project [WIP]
+# The Prince by Machiavelli - ChatGPT Integration Project
 
-## Fork and run it on Replit
+https://github.com/user-attachments/assets/0448bf01-cf24-4359-b5a8-5bc501ff96cb
+
+
+## Fork and run it on Replit (currently not working)
 https://replit.com/@w4rlock999/ThePrinceGPT-STABLE?v=1
 
 ## Overview
